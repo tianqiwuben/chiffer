@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "tianqiwu",
+    "password": "root",
+    "database": "todos-dev",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "tianqiwu",
+    "password": "root",
+    "database": "todos-test",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "tianqiwu",
+    "password": "root",
+    "database": "todos-prod",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
