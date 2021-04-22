@@ -3,14 +3,8 @@ const {
   Model
 } = require('sequelize');
 
-const STATUS = {
-  open: 0,
-  start: 1,
-
-}
-
 module.exports = (sequelize, DataTypes) => {
-  class TodoItem extends Model {
+  class User extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -18,25 +12,34 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      TodoItem.belongsTo(models.Todo, {
-        foreignKey: 'todoId',
-        onDelete: 'CASCADE',
-      });
     }
   };
-  TodoItem.init({
-    content: {
+  User.init({
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    complete: {
-      type: DataTypes.BOOLEAN,
+    password: {
+      type: DataTypes.STRING,
       allowNull: false,
-    }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate:{
+        isEmail : true
+      }
+    },
   }, {
     sequelize,
-    modelName: 'TodoItem',
+    modelName: 'User',
   });
-  TodoItem.STATUS = STATUS;
-  return TodoItem;
+  User.prototype.response = function(){
+    return {
+      name: this.name,
+      email: email,
+      id: id,
+    }
+  }
+  return User;
 };
