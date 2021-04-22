@@ -12,6 +12,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.belongsToMany(models.Project, {
+        through: "UserProjects",
+        as: "projects",
+        foreignKey: "userId",
+        otherKey: 'projectId',
+      });
     }
   };
   User.init({
