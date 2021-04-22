@@ -4,15 +4,34 @@ const TodoItem = require('../models').TodoItem;
 module.exports = {
   create(req, res) {
     return Todo
-      .create({
-        title: req.body.title,
-      })
+      .create(
+        {
+          ownerId: req.user.id,
+          projectId: req.proj.id,
+          ...Todo.permittedFields(req.body)
+        },
+      )
       .then(todo => res.status(201).send(todo))
       .catch(error => res.status(400).send(error));
   },
   list(req, res) {
+    const query = {
+      projectId: req.proj.id,
+    };
+    if (req.query.ownerId) {
+      query.ownerId = req.query.ownerId;
+    }
+    if (req.query.requesterId) {
+      query.requesterId = req.query.requesterId;
+    }
     return Todo
       .findAll({
+        where: query,
+        order: [
+          ['priority', 'ASC'],
+        ],
+        offset: req.params.page ? (req.params.page * 25) : 0,
+        limit: 25,
         include: [{
           model: TodoItem,
           as: 'todoItems',
@@ -54,9 +73,7 @@ module.exports = {
           });
         }
         return todo
-          .update({
-            title: req.body.title || todo.title,
-          })
+          .update(Todo.permittedFields(req.body))
           .then(() => res.status(200).send(todo))  // Send back the updated todo.
           .catch((error) => res.status(400).send(error));
       })

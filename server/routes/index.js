@@ -44,7 +44,7 @@ const authenticateProject = (req, res, next) => {
         }
         next();
       } else {
-        return res.sendStatus(403);
+        return res.sendStatus(401);
       }
     })
   }
@@ -67,13 +67,13 @@ module.exports = (app) => {
   app.post('/api/projects', authenticateJWT, projectsController.create);
   app.post('/api/projects/:projectId/invite', authenticateJWT, authenticateProject, projectsController.invite);
 
-  /*
-  app.post('/api/todos', todosController.create);
-  app.get('/api/todos', todosController.list);
-  app.get('/api/todos/:todoId', todosController.retrieve);
-  app.put('/api/todos/:todoId', todosController.update);
-  app.delete('/api/todos/:todoId', todosController.destroy);
-
+  
+  app.post('/api/projects/:projectId/todos', authenticateJWT, authenticateProject, todosController.create);
+  app.get('/api/projects/:projectId/todos', authenticateJWT, authenticateProject, todosController.list);
+  app.get('/api/projects/:projectId/todos/:todoId', authenticateJWT, authenticateProject, todosController.retrieve);
+  app.put('/api/projects/:projectId/todos/:todoId', authenticateJWT, authenticateProject, todosController.update);
+  app.delete('/api/projects/:projectId/todos/:todoId', authenticateJWT, authenticateProject, todosController.destroy);
+/*
   app.post('/api/todos/:todoId/items', todoItemsController.create);
   app.put('/api/todos/:todoId/items/:todoItemId', todoItemsController.update);
   app.delete(
