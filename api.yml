@@ -1,0 +1,731 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: express
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /users:
+    get:
+      summary: 'Returns details about self'
+      security:
+        - BearerAuth: [JWT]
+      tags:
+        - user
+      responses:
+        '200':
+          description: 'Details about a user'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 'Unautorized'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: 'Create a user'
+      tags:
+        - user
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/CreateUser'
+      responses:    
+        '201':
+          description: 'User created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: 'logout a user'
+      security:
+        - BearerAuth: [JWT]
+      tags:
+        - user
+      responses:
+        '204':
+          description: 'Logout success'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    
+  /users/login:
+    post:
+      summary: 'user login'
+      tags:
+        - user
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/LoginUser'
+      responses:    
+        '200':
+          description: 'User Loginned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /projects:
+    post:
+      summary: 'Create a project'
+      security:
+        - BearerAuth: [JWT]
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/Project'
+      responses:    
+        '201':
+          description: 'project created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: 'List projects user in'
+      security:
+        - BearerAuth: [JWT]
+      responses:    
+        '200':
+          description: 'project created'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /projects/{projectId}/invite:
+    post:
+      summary: 'Invite a user into a project, current user must be owner'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    type: object
+                    required:
+                        - userId
+                    properties:
+                        userId:
+                            type: integer
+      responses:    
+        '200':
+          description: 'user invited'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /projects/{projectId}/todos:
+    post:
+      summary: 'Create a new Todo in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/Todo'
+      responses:    
+        '201':
+          description: 'Todo created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: 'get Todos in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: query
+            name: ownerId
+            required: false
+            schema:
+                type: integer
+          - in: query
+            name: requesterId
+            required: false
+            schema:
+                type: integer
+          - in: query
+            name: status
+            required: false
+            schema:
+                type: integer
+      responses:    
+        '200':
+          description: 'Todo fetched'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/Todo'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /projects/{projectId}/todos/{todoId}:
+    put:
+      summary: 'Update Todo in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/Todo'
+      responses:    
+        '200':
+          description: 'Todo created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: 'get one Todo in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+      responses:    
+        '200':
+          description: 'Todo item updated'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Todo'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Todo not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: 'delete one Todo in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+      responses:    
+        '204':
+          description: 'Todo deleted'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /projects/{projectId}/todos/{todoId}/items:
+    post:
+      summary: 'Create a new TodoItem in the todo'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/TodoItem'
+      responses:    
+        '201':
+          description: 'TodoItem created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: 'get TodoItems in the todo'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+      responses:    
+        '200':
+          description: 'items fetched'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                    $ref: '#/components/schemas/TodoItem'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /projects/{projectId}/todos/{todoId}/items/{todoItemId}:
+    put:
+      summary: 'Update Todo item in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoItemId
+            required: true
+            schema:
+                type: integer
+      requestBody:
+          required: true
+          content:
+              application/json:
+                schema:
+                    $ref: '#/components/schemas/TodoItem'
+      responses:    
+        '200':
+          description: 'Todo created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoItem'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: 'Invalid Input'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      summary: 'get one Todo Item in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoItemId
+            required: true
+            schema:
+                type: integer
+      responses:    
+        '200':
+          description: 'TodoItem fetched'
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/TodoItem'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'Todo not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: 'delete one TodoItem in the project'
+      security:
+        - BearerAuth: [JWT]
+      parameters:
+          - in: path
+            name: projectId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoId
+            required: true
+            schema:
+                type: integer
+          - in: path
+            name: todoItemId
+            required: true
+            schema:
+                type: integer
+      responses:    
+        '204':
+          description: 'Todo deleted'
+        '401':
+          description: 'Unautorized'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - jwt
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        jwt:
+          type: string
+    CreateUser:
+        type: object
+        required:
+          - email
+          - name
+          - password
+        properties:
+          email:
+            type: string
+          name:
+            type: string
+          password:
+            type: string
+    LoginUser:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+    Project:
+        type: object
+        required:
+          - name
+        properties:
+          name:
+            type: string
+          id:
+            type: integer
+    Todo:
+        type: object
+        required:
+          - title
+        properties:
+            id:
+                type: integer
+            projectId:
+                type: integer
+            title:
+                type: string
+            status:
+                type: integer
+            requesterId:
+                type: integer
+            ownerId:
+                type: integer
+            description:
+                type: string
+            priority:
+                type: number
+    TodoItem:
+        type: object
+        required:
+          - content
+        properties:
+            id:
+                type: integer
+            todoId:
+                type: integer
+            content:
+                type: string
+            complete:
+                type: boolean
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
