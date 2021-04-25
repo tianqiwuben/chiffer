@@ -1,15 +1,18 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: express
+  title: Todo app
 servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/tianqiwuben/api/1.0.0
   - url: 'http://localhost:3000'
 paths:
   /users:
     get:
       summary: 'Returns details about self'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       tags:
         - user
       responses:
@@ -59,7 +62,7 @@ paths:
     delete:
       summary: 'logout a user'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       tags:
         - user
       responses:
@@ -107,7 +110,7 @@ paths:
     post:
       summary: 'Create a project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       requestBody:
           required: true
           content:
@@ -136,7 +139,7 @@ paths:
     get:
       summary: 'List projects user in'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       responses:    
         '200':
           description: 'project created'
@@ -153,11 +156,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /projects/{projectId}/invite:
+  /projects/{projectId}/users:
     post:
       summary: 'Invite a user into a project, current user must be owner'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -201,7 +204,7 @@ paths:
     post:
       summary: 'Create a new Todo in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -242,7 +245,7 @@ paths:
     get:
       summary: 'get Todos in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -296,7 +299,7 @@ paths:
     put:
       summary: 'Update Todo in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -342,7 +345,7 @@ paths:
     get:
       summary: 'get one Todo in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -382,7 +385,7 @@ paths:
     delete:
       summary: 'delete one Todo in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -414,7 +417,7 @@ paths:
     post:
       summary: 'Create a new TodoItem in the todo'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -460,7 +463,7 @@ paths:
     get:
       summary: 'get TodoItems in the todo'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -504,7 +507,7 @@ paths:
     put:
       summary: 'Update Todo item in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -555,7 +558,7 @@ paths:
     get:
       summary: 'get one Todo Item in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -600,7 +603,7 @@ paths:
     delete:
       summary: 'delete one TodoItem in the project'
       security:
-        - BearerAuth: [JWT]
+        - bearerAuth: []
       parameters:
           - in: path
             name: projectId
@@ -636,6 +639,11 @@ paths:
 
 
 components:
+  securitySchemes:
+    bearerAuth:            # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JW
   schemas:
     User:
       type: object
